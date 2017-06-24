@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+tools:context="com.example.harikakonagala.businessinfo.MainActivity">
+
+
+    <ImageView
+        android:id="@+id/title_imageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="19dp"
+        android:scaleType="center"
+        app:srcCompat="@drawable/tumblr"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/tv_about"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/title_imageView"
+        android:layout_marginLeft="24dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="37dp"
+        android:textColor="@color/colorPrimary"
+        android:text="About Us:" />
+
+    <TextView
+        android:id="@+id/tv_textabout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/tv_about"
+        android:layout_marginLeft="58dp"
+        android:layout_marginStart="58dp"
+        android:layout_toEndOf="@+id/tv_about"
+        android:layout_toRightOf="@+id/tv_about"
+         />
+
+    <TextView
+        android:id="@+id/tv_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Contact Us:"
+        android:textColor="@color/colorPrimary"
+        android:layout_below="@+id/tv_about"
+        android:layout_alignRight="@+id/tv_hours"
+        android:layout_alignEnd="@+id/tv_hours" />
+
+    <TextView
+        android:id="@+id/tv_tel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/tv_textabout"
+        android:layout_alignStart="@+id/tv_textabout"
+        android:layout_alignTop="@+id/tv_info"
+        android:text="Tel: 443-784-9886" />
+
+    <TextView
+        android:id="@+id/tv_mail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/tv_tel"
+        android:layout_alignStart="@+id/tv_tel"
+        android:layout_below="@+id/tv_tel"
+        android:layout_marginTop="24dp"
+        android:text="Email : hk12@umbc.edu" />
+
+    <TextView
+        android:id="@+id/tv_addr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Address : Hanover, MD"
+        android:layout_below="@+id/tv_mail"
+        android:layout_alignLeft="@+id/tv_mail"
+        android:layout_alignStart="@+id/tv_mail" />
+
+    <TextView
+        android:id="@+id/tv_hours"
+        android:textColor="@color/colorPrimary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="61dp"
+        android:text="Open Hours"
+        android:layout_below="@+id/tv_addr"
+        android:layout_alignLeft="@+id/tv_about"
+        android:layout_alignStart="@+id/tv_about" />
+
+    <Spinner
+        android:id="@+id/sp_open"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/tv_hours"
+        android:layout_marginTop="20dp"
+        android:spinnerMode="dialog"
+        android:prompt="Open_Hours"
+        />
+
+</RelativeLayout>
+
+</ScrollView>

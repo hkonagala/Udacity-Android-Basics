@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.harikakonagala.quizapp.Question3">
+
+    <TextView
+        android:id="@+id/tv_q3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:text="TextView" />
+
+    <RadioButton
+        android:id="@+id/rb_q3opt1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="158dp"
+        android:layout_marginLeft="14dp"
+        android:layout_marginStart="14dp"
+        android:text="RadioButton" />
+
+    <RadioButton
+        android:id="@+id/rb_q3opt2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/rb_q3opt1"
+        android:layout_alignStart="@+id/rb_q3opt1"
+        android:layout_alignTop="@+id/rb_q3opt1"
+        android:layout_marginTop="73dp"
+        android:text="RadioButton" />
+
+    <RadioButton
+        android:id="@+id/rb_q3opt3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/rb_q3opt1"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginEnd="51dp"
+        android:layout_marginRight="51dp"
+        android:text="RadioButton" />
+
+    <RadioButton
+        android:id="@+id/rb_q3opt4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="RadioButton"
+        android:layout_alignTop="@+id/rb_q3opt2"
+        android:layout_alignLeft="@+id/rb_q3opt3"
+        android:layout_alignStart="@+id/rb_q3opt3"
+        android:layout_marginLeft="13dp"
+        android:layout_marginStart="13dp" />
+
+    <Button
+        android:id="@+id/bt_q3next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="12dp"
+        android:background="@android:color/holo_green_dark"
+        android:text="next" />
+
+    <ImageView
+        android:id="@+id/img_q3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_q3"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="83dp"
+        app:srcCompat="@drawable/question3" />
+
+</RelativeLayout>

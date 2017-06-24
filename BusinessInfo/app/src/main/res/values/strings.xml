@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">BusinessInfo</string>
+    <string-array name="open_hours">
+        <item>Monday: 10 AM - 9 PM</item>
+        <item>Tuesday : 10 AM - 9 PM</item>
+        <item>Wednesday : 10 AM - 9 PM</item>
+        <item>Thursday : 10 AM - 9 PM</item>
+        <item>Friday : 10 AM - 9 PM</item>
+        <item>Saturday : 10 AM - 9 PM</item>
+        <item>Sunday : 10 AM - 7 PM</item>
+    </string-array>
+</resources>
