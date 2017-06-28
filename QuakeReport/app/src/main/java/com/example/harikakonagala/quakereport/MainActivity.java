@@ -1,29 +1,50 @@
 package com.example.harikakonagala.quakereport;
 
+import android.content.AsyncTaskLoader;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.app.LoaderManager;
+import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.ListViewCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
 
+public class MainActivity extends AppCompatActivity implements LoaderCallbacks<List<earthquakeData>> {
+
+    public static final String LOG_TAG = MainActivity.class.getSimpleName();
+    private static final String SAMPLE_USGS_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventtype=earthquake&orderby=time&minmag=6&limit=10";
+
+    private EarthQuakeAdapter earthquakeAdapter;
+    private static final int EARTHQUAKE_LOADER_ID = 1;
+    private TextView emptyTextView;
+    private ProgressBar progressBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Log.i(LOG_TAG, "onCreate() method intialized..");
         ListView listView = (ListView) findViewById(R.id.city_list);
 
-        ArrayList<earthquakeData> earthquakelist = QuertUtils.extractEarthquakes();
-
-        final EarthQuakeAdapter earthquakeAdapter = new EarthQuakeAdapter(this ,earthquakelist);
+        progressBar = (ProgressBar) findViewById(R.id.loading_spinner);
+        earthquakeAdapter = new EarthQuakeAdapter(this ,new ArrayList<earthquakeData>());
         listView.setAdapter(earthquakeAdapter);
 
         //on click listener on every item
@@ -41,5 +62,80 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+       // EarthquakeTask earthquakeTask = new EarthquakeTask();
+       // earthquakeTask.execute(SAMPLE_USGS_URL);
+
+
+
+        emptyTextView = (TextView) findViewById(R.id.empty);
+        listView.setEmptyView(emptyTextView);
+        ConnectivityManager connec = (ConnectivityManager)getSystemService(getBaseContext().CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connec.getActiveNetworkInfo();
+        if(networkInfo !=null && networkInfo.isConnected()){
+            LoaderManager loaderManager = getLoaderManager();
+            loaderManager.initLoader(EARTHQUAKE_LOADER_ID, null, this);
+        }else {
+            progressBar.setVisibility(View.GONE);
+            emptyTextView.setText("NO INTERNET CONNECTION");
+        }
+
+
     }
+
+
+    @Override
+    public Loader<List<earthquakeData>> onCreateLoader(int id, Bundle args) {
+        Log.i(LOG_TAG, "onCreateLoader() method intialized..");
+        return new EarthquakeLoader(this, SAMPLE_USGS_URL);
+
+    }
+
+    @Override
+    public void onLoadFinished(Loader<List<earthquakeData>> loader, List<earthquakeData> data) {
+
+
+        progressBar.setVisibility(View.GONE);
+        emptyTextView.setText("NO EARTHQUAKES FOUND");
+        Log.i(LOG_TAG, "onLoadFinished() method intialized..");
+        earthquakeAdapter.clear();
+
+        if(data!= null && !data.isEmpty()){
+            earthquakeAdapter.addAll(data);
+        }
+
+
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<List<earthquakeData>> loader) {
+
+        Log.i(LOG_TAG, "onLoaderReset() method is called....");
+        earthquakeAdapter.clear();
+    }
+
+   /* private class EarthquakeTask extends AsyncTask<String, Void, List<earthquakeData>>{
+        @Override
+        protected List<earthquakeData> doInBackground(String... params) {
+
+            if(params.length <1 || params[0] == null){
+                return null;
+            }
+
+            List<earthquakeData> earthquakelist = QuertUtils.fetchEarthquakeData(params[0]);
+
+            return earthquakelist;
+        }
+
+        @Override
+        protected void onPostExecute(List<earthquakeData> earthquakeDatas) {
+
+            earthquakeAdapter.clear();
+
+            if(earthquakeDatas!= null && !earthquakeDatas.isEmpty()){
+                earthquakeAdapter.addAll(earthquakeDatas);
+            }
+        }
+    }*/
+
 }
