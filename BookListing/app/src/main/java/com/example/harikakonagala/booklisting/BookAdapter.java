@@ -1,6 +1,7 @@
 package com.example.harikakonagala.booklisting;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -9,7 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.Arrays;
 import java.util.List;
@@ -44,16 +48,8 @@ public class BookAdapter extends ArrayAdapter<books> {
         TextView authors = (TextView) listItemView.findViewById(R.id.book_author);
         authors.setText("Author(s): " +TextUtils.join(", ", book.getAuthors()));
 
-        //TextView pDate = (TextView) listItemView.findViewById(R.id.date);
-        //pDate.setText(book.getDate());
-
-        //TextView aRating = (TextView) listItemView.findViewById(R.id.avg_rating);
-        //aRating.setText("Avg. Rating: " + String.valueOf(book.getRating()));
-
-        //TextView rPrice = (TextView) listItemView.findViewById(R.id.book_price);
-        //rPrice.setText("Price: $"+ String.valueOf(book.getPrice()));
-
-
+        ImageView imageView = (ImageView) listItemView.findViewById(R.id.book_image);
+        Picasso.with(getContext()).load(Uri.parse(book.getImageURL())).error(R.drawable.no_book_cover).into(imageView);
 
         return listItemView;
     }

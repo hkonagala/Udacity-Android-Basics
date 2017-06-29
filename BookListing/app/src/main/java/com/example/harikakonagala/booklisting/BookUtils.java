@@ -47,10 +47,8 @@ public class BookUtils {
                     JSONObject item = items.getJSONObject(i);
                     JSONObject volumeInfo = item.getJSONObject("volumeInfo");
                     String title = volumeInfo.getString("title");
-                    //String publishedDate = volumeInfo.getString("publishedDate");
-                    //float rating = (float) volumeInfo.getDouble("averageRating");
                     String[] authors = new String[]{"No Authors"};
-                    if(!volumeInfo.isNull("authors")){
+                    if (!volumeInfo.isNull("authors")) {
                         JSONArray authorsArray = volumeInfo.getJSONArray("authors");
                         Log.d(LOG_TAG, "authors #" + authorsArray.length());
                         authors = new String[authorsArray.length()];
@@ -58,18 +56,16 @@ public class BookUtils {
                             authors[j] = authorsArray.getString(j);
                         }
                     }
-
+                    String info = volumeInfo.getString("infoLink");
 
                     // Json parsing for image
-                    //JSONObject infoLinks = volumeInfo.getJSONObject("infoLink");
-                    String info = volumeInfo.getString("infoLink");
-                    //Log.e(LOG_TAG, "jsonConvertor: " + info);
+                    JSONObject imageLinks = volumeInfo.getJSONObject("imageLinks");
+                    String images = "";
+                    if (imageLinks.has("imageLinks")) {
+                        images = imageLinks.getString("smallThumbnail");
+                    }
 
-                    //JSONObject salesInfo = item.getJSONObject("saleInfo");
-                    //JSONObject retailPrice = salesInfo.getJSONObject("retailPrice");
-                    //float price = (float) retailPrice.getDouble("amount");
-                    //String url = salesInfo.getString("buyLink");
-                    books data = new books(title, authors, info);
+                    books data = new books(title, authors, info, images);
                     booksList.add(data);
                 }
 

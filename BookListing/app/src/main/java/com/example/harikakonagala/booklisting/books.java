@@ -11,40 +11,31 @@ import static android.R.attr.rating;
 public class books {
     private String title;
     private String[] authors;
-    //private String date;
-    //private float rating;
-    //private float price;
     private String infoLink;
+    private String imageURL;
 
 
-    public books(String title, String[] authors, String infoLink) {
+    public books(String title, String[] authors, String infoLink, String imageURL) {
         this.title = title;
         this.authors = authors;
         this.infoLink = infoLink;
+        this.imageURL = imageURL;
     }
 
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     public String[] getAuthors() {
         return authors;
-    }
-
-    public void setAuthors(String[] authors) {
-        this.authors = authors;
     }
 
     public String getInfoLink() {
         return infoLink;
     }
 
-    public void setInfoLink(String infoLink) {
-        this.infoLink = infoLink;
+    public String getImageURL() {
+        return imageURL;
     }
 
     @Override
