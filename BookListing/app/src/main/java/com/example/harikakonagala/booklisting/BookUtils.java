@@ -60,10 +60,8 @@ public class BookUtils {
 
                     // Json parsing for image
                     JSONObject imageLinks = volumeInfo.getJSONObject("imageLinks");
-                    String images = "";
-                    if (imageLinks.has("imageLinks")) {
-                        images = imageLinks.getString("smallThumbnail");
-                    }
+                    String images = imageLinks.getString("smallThumbnail");
+
 
                     books data = new books(title, authors, info, images);
                     booksList.add(data);

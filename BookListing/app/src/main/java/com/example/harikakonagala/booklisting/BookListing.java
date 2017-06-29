@@ -122,7 +122,7 @@ public class BookListing extends AppCompatActivity {
         protected void onPostExecute(List<books> bookses) {
 
             progressBar.setVisibility(View.GONE);
-            emptyTextView.setText("NO DATA AVAILABLE");
+            emptyTextView.setText("NO BOOKS AVAILABLE");
             bookAdapter.clear();
 
             if(bookses !=null && !bookses.isEmpty()){
