@@ -37,7 +37,13 @@ public class NewsAdapter extends ArrayAdapter<News> {
         heading.setText(data.getWebTitle());
 
         TextView tags = (TextView) listItemView.findViewById(R.id.tv_tag);
-        tags.setText("Tags: " +data.getTag());
+        tags.setText(data.getTag());
+
+        TextView Tdate = (TextView) listItemView.findViewById(R.id.date);
+        Tdate.setText(data.getDate());
+
+        TextView nAuthor = (TextView) listItemView.findViewById(R.id.author);
+        nAuthor.setText(data.getAuthor());
 
         return listItemView;
     }

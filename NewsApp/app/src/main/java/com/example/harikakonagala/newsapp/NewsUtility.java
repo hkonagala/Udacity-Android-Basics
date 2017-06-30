@@ -1,5 +1,6 @@
 package com.example.harikakonagala.newsapp;
 
+import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -15,8 +16,12 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Harika Konagala on 6/29/2017.
@@ -29,7 +34,7 @@ public class NewsUtility {
     public NewsUtility() {
     }
 
-    private static List<News> extractNewsJson(String NewsJson){
+    public static List<News> extractNewsJson(String NewsJson){
         Log.i(LOG_TAG, "Initiating parsing...");
 
         if(TextUtils.isEmpty(NewsJson)){
@@ -49,8 +54,21 @@ public class NewsUtility {
                 String websiteUrl = result.getString("webUrl");
                 String tag = result.getString("sectionName");
 
+                String date = result.getString("webPublicationDate");
+                date = formatDate(date);
+                JSONArray tagsArray = result.getJSONArray("tags");
+                String author = "";
 
-                News jsonNews = new News(title, websiteUrl, tag);
+                if (tagsArray.length() == 0) {
+                    author = null;
+                } else {
+                    for (int j = 0; j < tagsArray.length(); j++) {
+                        JSONObject firstObject = tagsArray.getJSONObject(j);
+                        author += firstObject.getString("webTitle") + ". ";
+                    }
+                }
+
+                News jsonNews = new News(title, websiteUrl, tag, date, author);
                 newsItem.add(jsonNews);
             }
         }catch (JSONException e){
@@ -61,17 +79,47 @@ public class NewsUtility {
 
     }
 
-    private static URL createUrl(String stringUrl) {
-        URL url = null;
+    private static String formatDate(String rawDate) {
+        String jsonDatePattern = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+        SimpleDateFormat jsonFormatter = new SimpleDateFormat(jsonDatePattern, Locale.US);
         try {
-            url = new URL(stringUrl);
-        } catch (MalformedURLException e) {
-            Log.e(LOG_TAG, "Problem building the URL ", e);
+            Date parsedJsonDate = jsonFormatter.parse(rawDate);
+            String finalDatePattern = "MMM d, yyy";
+            SimpleDateFormat finalDateFormatter = new SimpleDateFormat(finalDatePattern, Locale.US);
+            return finalDateFormatter.format(parsedJsonDate);
+        } catch (ParseException e) {
+            Log.e("QueryUtils", "Error parsing JSON date: ", e);
+            return "";
         }
+    }
+
+
+    static String createStringUrl() {
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("http")
+                .encodedAuthority("content.guardianapis.com")
+                .appendPath("search")
+                .appendQueryParameter("order-by", "newest")
+                .appendQueryParameter("show-references", "author")
+                .appendQueryParameter("show-tags", "contributor")
+                .appendQueryParameter("q", "business")
+                .appendQueryParameter("api-key", "test");
+        String url = builder.build().toString();
         return url;
     }
 
-    private static String makeHttpRequest(URL url) throws IOException {
+
+    static URL createUrl() {
+        String stringUrl = createStringUrl();
+        try {
+            return new URL(stringUrl);
+        } catch (MalformedURLException e) {
+            Log.e("Queryutils", "Error creating URL: ", e);
+            return null;
+        }
+    }
+
+    public static String makeHttpRequest(URL url) throws IOException {
         String jsonResponse = "";
 
         // If the URL is null, then return early.
@@ -122,7 +170,7 @@ public class NewsUtility {
         return output.toString();
     }
 
-    public static List<News> fetchNews(String requestUrl){
+    /*public static List<News> fetchNews(){
 
         try{
             Thread.sleep(2000);
@@ -130,7 +178,7 @@ public class NewsUtility {
             e.printStackTrace();
         }
 
-        URL url = createUrl(requestUrl);
+        URL url = createUrl();
         String jsonResponse = null;
         try{
             jsonResponse = makeHttpRequest(url);
@@ -140,6 +188,6 @@ public class NewsUtility {
         }
         List<News> newsDataItem = extractNewsJson(jsonResponse);
         return newsDataItem;
-    }
+    }*/
 
 }

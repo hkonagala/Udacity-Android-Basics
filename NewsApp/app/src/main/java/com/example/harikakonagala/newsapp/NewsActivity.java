@@ -5,10 +5,15 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.app.LoaderManager;
+import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Loader;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,33 +23,43 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NewsActivity extends AppCompatActivity {
+import static android.R.attr.data;
+import static android.R.attr.key;
+import static android.R.attr.tag;
+import static com.example.harikakonagala.newsapp.NewsUtility.createUrl;
+
+public class NewsActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, LoaderCallbacks<List<News>>{
 
 
     public static final String LOG_TAG = NewsActivity.class.getName();
 
+    private static int LOADER_ID = 0;
+    SwipeRefreshLayout swipe;
     TextView emptyTextView;
     ProgressBar progressBar;
     private NewsAdapter newsAdapter;
-    private static final String DEFAULT_QUERY = "debate";
-    String searchQuery = "";
+
+    private LoaderManager loaderManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news);
 
         ListView listView = (ListView) findViewById(R.id.news_list);
+        swipe = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+        swipe.setOnRefreshListener(this);
+        swipe.setColorSchemeColors(getResources().getColor(R.color.colorAccent));
 
         emptyTextView = (TextView) findViewById(R.id.empty_text_view);
         progressBar = (ProgressBar) findViewById(R.id.loading_spinner);
         newsAdapter = new NewsAdapter(this, new ArrayList<News>());
         listView.setAdapter(newsAdapter);
         listView.setEmptyView(emptyTextView);
-
-        fetchCurrentNews(DEFAULT_QUERY);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -55,73 +70,56 @@ public class NewsActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        fetchLoader();
+
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.search_menu, menu);
-        final MenuItem searchViewItem = menu.findItem(R.id.action_search);
-        final SearchView searchViewAndroidActionBar = (SearchView) MenuItemCompat.getActionView(searchViewItem);
-        searchViewAndroidActionBar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-
-                fetchCurrentNews(query);
-                searchQuery = query;
-                searchViewAndroidActionBar.clearFocus();
-                searchViewAndroidActionBar.setQuery("", false);
-                searchViewAndroidActionBar.setIconified(true);
-                searchViewItem.collapseActionView();
-                NewsActivity.this.setTitle(query);
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
-        });
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    public void fetchCurrentNews(String query){
+    public void fetchLoader(){
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(getBaseContext().CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         if(networkInfo !=null && networkInfo.isConnected()){
-            NewsTask task = new NewsTask();
-            task.execute(query);
+            loaderManager = getLoaderManager();
+            loaderManager.initLoader(LOADER_ID, null, this);
         }
         else{
             progressBar.setVisibility(View.GONE);
             emptyTextView.setText("NO INTERNET CONNECTION");
         }
-
     }
 
 
-    private class NewsTask extends AsyncTask<String, Void, List<News>>{
+    @Override
+    public void onRefresh() {
 
-        private static final String BASE_URL = "https://content.guardianapis.com/";
-        @Override
-        protected List<News> doInBackground(String... params) {
+        loaderManager.restartLoader(LOADER_ID, null, this);
+    }
 
-            if(params.length <1 || params[0] == null){
-                return null;
-            }
-            List<News> listNews = NewsUtility.fetchNews(BASE_URL + "search?q=" + params[0]);
-            return listNews;
-        }
+    @Override
+    public Loader<List<News>> onCreateLoader(int id, Bundle args) {
+        return new NewsLoader(this);
+    }
 
-        @Override
-        protected void onPostExecute(List<News> newses) {
+    @Override
+    public void onLoadFinished(Loader<List<News>> loader, List<News> data) {
+
+        swipe.setRefreshing(false);
+        if (data != null) {
             progressBar.setVisibility(View.GONE);
             emptyTextView.setText("NO RELEVENAT NEWS AVAILABLE");
+            newsAdapter.setNotifyOnChange(false);
             newsAdapter.clear();
-
-            if(newses !=null  && !newses.isEmpty()){
-                newsAdapter.addAll(newses);
-            }
+            newsAdapter.setNotifyOnChange(true);
+            newsAdapter.addAll(data);
         }
+
     }
+
+    @Override
+    public void onLoaderReset(Loader<List<News>> loader) {
+
+        Log.i(LOG_TAG, "onLoaderReset() method is called....");
+        newsAdapter.clear();
+    }
+
 }
