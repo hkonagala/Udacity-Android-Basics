@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">NewsApp</string>
+    <string name="search_title">Search Topics</string>
+    <string name="settings_menu_item">Settings</string>
+</resources>
