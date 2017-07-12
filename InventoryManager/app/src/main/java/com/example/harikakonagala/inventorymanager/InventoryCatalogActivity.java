@@ -1,7 +1,13 @@
 package com.example.harikakonagala.inventorymanager;
 
+import android.app.LoaderManager;
 import android.content.ContentUris;
+import android.content.ContentValues;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -11,14 +17,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.harikakonagala.inventorymanager.data.ItemContract;
 import com.example.harikakonagala.inventorymanager.data.ItemDbHelper;
 
-public class InventoryCatalogActivity extends AppCompatActivity {
+public class InventoryCatalogActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
 
+    private static final int ITEM_LOADER = 0;
     private InventoryCursorAdapter inventoryCursorAdapter;
     private ItemDbHelper itemDbHelper;
+    private SQLiteDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +61,7 @@ public class InventoryCatalogActivity extends AppCompatActivity {
         });
 
         itemDbHelper = new ItemDbHelper(this);
-
+        getLoaderManager().initLoader(ITEM_LOADER, null, this);
     }
 
     @Override
@@ -66,14 +75,61 @@ public class InventoryCatalogActivity extends AppCompatActivity {
 
         switch (item.getItemId()){
             case R.id.action_insert_dummy_data:
-                //TODO action
+                insertStock();
                 return true;
             case R.id.action_delete_all_entries:
-                //TODO action
+                deleteStock();
                 return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+
+
+    private void insertStock() {
+        db = itemDbHelper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        values.put(ItemContract.InventoryEntry.COLUMN_PRODUCT_NAME, "cracking the coding interview");
+        values.put(ItemContract.InventoryEntry.COLUMN_PRICE, 23.34);
+        values.put(ItemContract.InventoryEntry.COLUMN_QUANTITY, 1);
+        //TODO get image from database
+        values.put(ItemContract.InventoryEntry.COLUMN_IMAGE, R.drawable.if_document_image_information_103479);
+
+        Uri newUri = getContentResolver().insert(ItemContract.InventoryEntry.CONTENT_URI, values);
+    }
+
+    private void deleteStock() {
+        int rowsDeleted = getContentResolver().delete(ItemContract.InventoryEntry.CONTENT_URI, null, null);
+        if(rowsDeleted == 0){
+            Toast.makeText(this, "No Item(s) to delete", Toast.LENGTH_LONG).show();
+        }else{
+            Toast.makeText(this, "Item(s) deleted successfully!", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+
+        String[] projection = {ItemContract.InventoryEntry.ID,
+                ItemContract.InventoryEntry.COLUMN_PRODUCT_NAME,
+                ItemContract.InventoryEntry.COLUMN_PRICE,
+                ItemContract.InventoryEntry.COLUMN_QUANTITY,
+                ItemContract.InventoryEntry.COLUMN_IMAGE};
+        return new CursorLoader(this, ItemContract.InventoryEntry.CONTENT_URI, projection, null, null, null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
+        inventoryCursorAdapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
+        inventoryCursorAdapter.swapCursor(null);
+    }
 }

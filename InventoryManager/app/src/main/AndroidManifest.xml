@@ -25,7 +25,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".InventoryCatalogActivity" />
         </activity>
-        //TODO add provider
+        <provider
+            android:authorities="com.example.harikakonagala.inventorymanager"
+            android:name=".data.ItemProvider"
+            android:exported="false"/>
     </application>
 
 </manifest>
