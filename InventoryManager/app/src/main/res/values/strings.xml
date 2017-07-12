@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">InventoryManager</string>
+
+
+    <string name="action_insert_dummy_data">Insert Dummy Data</string>
+    <string name="action_delete_all_entries">Delete All Items</string>
+    <string name="action_save">Save Item</string>
+    <string name="action_delete">Delete Item</string>
+
+
+</resources>
