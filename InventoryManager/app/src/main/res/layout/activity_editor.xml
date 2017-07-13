@@ -115,15 +115,15 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/container_quantity"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:id="@+id/container_quantity"
         android:paddingTop="16dp">
 
         <TextView
             style="@style/CategoryStyle"
-            android:text="Quantity"/>
+            android:text="Quantity" />
 
 
         <LinearLayout
@@ -133,8 +133,8 @@
             android:orientation="horizontal">
 
             <Button
-                style="@style/QuantityPickerButtonStyle"
                 android:id="@+id/button_minus"
+                style="@style/QuantityPickerButtonStyle"
                 android:onClick="decrement"
                 android:text="-" />
 
@@ -142,16 +142,16 @@
                 android:id="@+id/edit_quantity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:inputType="number"
                 android:paddingLeft="8dp"
                 android:paddingRight="8dp"
                 android:text="1"
-                android:inputType="number"
                 android:textSize="16sp" />
 
             <Button
+                android:id="@+id/button_plus"
                 style="@style/QuantityPickerButtonStyle"
                 android:onClick="increment"
-                android:id="@+id/button_plus"
                 android:text="+" />
 
         </LinearLayout>

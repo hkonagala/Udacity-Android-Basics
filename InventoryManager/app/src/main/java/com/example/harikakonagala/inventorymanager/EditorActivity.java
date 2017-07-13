@@ -1,14 +1,18 @@
 package com.example.harikakonagala.inventorymanager;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.ContentValues;
+import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -26,7 +30,7 @@ import android.widget.Toast;
 import com.example.harikakonagala.inventorymanager.data.ItemContract;
 import com.example.harikakonagala.inventorymanager.data.ItemDbHelper;
 
-public class EditorActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
+public class EditorActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener{
 
 
     private EditText p_name, s_name, s_no, price;
@@ -39,6 +43,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     private Uri currentItemUri;
     private boolean itemHasChanged = false;
     private static final int EXISTING_ITEM_LOADER =0;
+    int quantity = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +81,59 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         photo.setOnTouchListener(mTouchListener);
         plus.setOnTouchListener(mTouchListener);
         minus.setOnTouchListener(mTouchListener);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.image_button:
+                break;
+            case R.id.call_button:
+                String number = "tel:" + s_no.getText().toString();
+                Intent callIntent = new Intent(Intent.ACTION_DIAL);
+                callIntent.setData(Uri.parse(number));
+
+                if (ActivityCompat.checkSelfPermission(EditorActivity.this,
+                        Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(EditorActivity.this, new String[]{Manifest.permission.CALL_PHONE}, 125);
+                    return;
+                }
+                if (callIntent.resolveActivity(EditorActivity.this.getPackageManager()) != null) {
+                    startActivity(callIntent);
+                }
+                itemHasChanged = true;
+                break;
+        }
+
+
+    }
+
+    public void increment(View view) {
+        if (quantity == 100) {
+            return;
+        }
+        quantity = quantity + 1;
+        displayQuantity(quantity);
+        itemHasChanged = true;
+    }
+
+
+
+    /**
+     * This method is called when the minus button is clicked.
+     */
+    public void decrement(View view) {
+        if (quantity == 0) {
+            return;
+        }
+        quantity = quantity - 1;
+        displayQuantity(quantity);
+        itemHasChanged = true;
+    }
+
+    private void displayQuantity(int numberOfItems) {
+
+        quant.setText(String.valueOf(numberOfItems));
     }
 
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
@@ -274,16 +332,57 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return null;
+        String[] projection = {ItemContract.InventoryEntry.ID,
+                ItemContract.InventoryEntry.COLUMN_PRODUCT_NAME,
+                ItemContract.InventoryEntry.COLUMN_SUPPLIER_NAME,
+                ItemContract.InventoryEntry.COLUMN_SUPPLIER_PHONE,
+                ItemContract.InventoryEntry.COLUMN_PRICE,
+                ItemContract.InventoryEntry.COLUMN_QUANTITY,
+                ItemContract.InventoryEntry.COLUMN_IMAGE};
+        return new CursorLoader(this, currentItemUri, projection, null, null, null);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
+        if(data ==null || data.getCount() < 1){
+            return;
+        }
+
+        if(data.moveToFirst()){
+            int columnProductName = data.getColumnIndex(ItemContract.InventoryEntry.COLUMN_PRODUCT_NAME);
+            int columnSupplierName = data.getColumnIndex(ItemContract.InventoryEntry.COLUMN_SUPPLIER_NAME);
+            int columnSupplierContact = data.getColumnIndex(ItemContract.InventoryEntry.COLUMN_SUPPLIER_PHONE);
+            int columnProductPrice = data.getColumnIndex(ItemContract.InventoryEntry.COLUMN_PRICE);
+            int columnProductQuant = data.getColumnIndex(ItemContract.InventoryEntry.COLUMN_QUANTITY);
+            //TODO image
+            // int columnProductImage = data.getColumnIndex(ItemContract.InventoryEntry.COLUMN_IMAGE);
+
+            String currentProductName = data.getString(columnProductName);
+            String currentSupplierName = data.getString(columnSupplierName);
+            String currentSupplierContact = data.getString(columnSupplierContact);
+            Double currentPrice = data.getDouble(columnProductPrice);
+            int currentQuant = data.getInt(columnProductQuant);
+
+            p_name.setText(currentProductName);
+            s_name.setText(currentSupplierName);
+            s_no.setText(currentSupplierContact);
+            price.setText(Double.toString(currentPrice));
+            quant.setText(Integer.toString(currentQuant));
+
+        }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
 
+        p_name.setText("");
+        s_name.setText("");
+        s_no.setText("");
+        price.setText(String.valueOf(0));
+        quant.setText(String.valueOf(1));
+
     }
+
+
 }
